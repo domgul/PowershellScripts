@@ -1,0 +1,23 @@
+In this script, we first set the variables for the new user account, including the username, password, full name, description, organizational unit (OU) path, and group.
+
+We then use the New-ADUser cmdlet to create the new user account. This cmdlet is part of the Active Directory module, so make sure you have the module installed and loaded before running this script. The -Name parameter specifies the username, -AccountPassword specifies the password, -Enabled specifies that the account should be enabled, -DisplayName specifies the full name, -Description specifies the description, and -Path specifies the OU where the account should be created.
+
+Finally, we use the Add-ADGroupMember cmdlet to add the new user to a group. This cmdlet is also part of the Active Directory module, and the -Identity parameter specifies the name of the group, and the -Members parameter specifies the username of the user to add to the group.
+
+You can customize this script by changing the variables to match the specific details of your new user account, such as the username, password, full name, and group. You can also add additional commands to perform other actions, such as setting default permissions or configuring email settings for the new user account.
+
+====================================================================================================================================
+
+# Set the variables for the new user account
+$userName = "NewUser"
+$password = ConvertTo-SecureString "Password123" -AsPlainText -Force
+$fullName = "New User"
+$description = "This is a new user account."
+$ouPath = "OU=Users,DC=example,DC=com"
+$group = "Users"
+
+# Create the new user account
+New-ADUser -Name $userName -AccountPassword $password -Enabled $true -DisplayName $fullName -Description $description -Path $ouPath
+
+# Add the user to a group
+Add-ADGroupMember -Identity $group -Members $userName
