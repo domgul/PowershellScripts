@@ -1,0 +1,30 @@
+In this script, we first set the source directory (the folder you want to back up) and the destination directory (where you want to save the backup). We then check if the destination directory exists, and if not, we create it.
+
+Next, we get the current date and time and create a backup file name using that information. We then use the Compress-Archive cmdlet to create a ZIP archive of the source directory and save it to the destination directory with the backup file name.
+
+Finally, we output a message indicating that the backup was created.
+
+You can customize this script by changing the source and destination directories, the backup file name format, and any other settings that you need. You can also add additional commands to perform other actions before or after the backup, such as copying the backup to a remote server or sending an email notification.
+
+=====================================================================================================================================================================
+
+# Set the source and destination directories
+$sourceDir = "C:\Important_Files"
+$destDir = "D:\Backup"
+
+# Create the destination directory if it doesn't exist
+if (!(Test-Path -Path $destDir -PathType Container)) {
+    New-Item -ItemType Directory -Path $destDir
+}
+
+# Get the current date and time
+$dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
+
+# Create the backup file name
+$backupName = "Backup_$dateTime.zip"
+
+# Create the backup file
+Compress-Archive -Path $sourceDir -DestinationPath "$destDir\$backupName"
+
+# Output the backup status
+Write-Host "Backup created: $backupName"
