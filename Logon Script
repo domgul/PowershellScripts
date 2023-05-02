@@ -1,0 +1,31 @@
+In this script, we first map two network drives to server shares using the New-PSDrive cmdlet. We then set the default printer using the Get-Printer and Set-Printer cmdlets.
+
+Next, we change the default power settings using the Set-SleepConfiguration cmdlet to prevent the system from going to standby or hibernate mode. We also stop unnecessary services using the Stop-Service cmdlet.
+
+Finally, we configure Windows Firewall using the Set-NetFirewallProfile and Set-NetFirewallRule cmdlets to disable the firewall and allow file and printer sharing.
+
+You can customize this script by adding or removing commands to suit your needs. For example, you can add commands to configure Internet Explorer settings, install software updates, or perform other actions that need to be performed every time a user logs in.
+
+====================================================================================================================================================================
+
+# Map network drives
+New-PSDrive -Name "H" -PSProvider FileSystem -Root "\\Server\Share1"
+New-PSDrive -Name "S" -PSProvider FileSystem -Root "\\Server\Share2"
+
+# Set default printer
+$printer = Get-Printer -Name "Printer1"
+Set-Printer -Name $printer.Name -Default
+
+# Change default power settings
+Set-SleepConfiguration -StandbyTimeout 0
+Set-SleepConfiguration -HibernateTimeout 0
+
+# Disable unnecessary services
+Stop-Service -Name "BluetoothService"
+Stop-Service -Name "Fax"
+Stop-Service -Name "PrintSpooler"
+
+# Configure Windows Firewall
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+Set-NetFirewallRule -Name "File and Printer Sharing (Echo Request - ICMPv4-In)" -Enabled True
+
