@@ -1,0 +1,29 @@
+In this script, we first set the variables for the software installation, including the software name, the path to the software installer, and any command-line arguments that should be passed to the installer.
+
+We then check if the software is already installed by searching the Windows registry for the software name. If it's already installed, the script will output a message saying so. If it's not installed, the script will use the Start-Process cmdlet to launch the software installer and pass the command-line arguments. The -Wait parameter tells the script to wait for the installation to complete before proceeding.
+
+After the installation is complete, we check the Windows registry again to confirm that the software was installed successfully. If it was, the script will output a message saying so. If not, the script will output a message saying that the installation failed.
+
+You can customize this script by changing the variables to match the software name, installer path, and arguments for your specific software. You can also modify the installation check to search for a different key in the Windows registry if needed.
+
+=====================================================================================================================================================================
+
+# Set the variables for the software installation
+$softwareName = "SoftwareName"
+$installerPath = "\\Server\Share\SoftwareInstaller.exe"
+$arguments = "/quiet /norestart"
+
+# Check if the software is already installed
+if (Get-ItemProperty "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*" | Where-Object {$_.DisplayName -like $softwareName}) {
+    Write-Host "$softwareName is already installed."
+} else {
+    # Install the software
+    Start-Process -FilePath $installerPath -ArgumentList $arguments -Wait
+
+    # Check if the installation was successful
+    if (Get-ItemProperty "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*" | Where-Object {$_.DisplayName -like $softwareName}) {
+        Write-Host "$softwareName was installed successfully."
+    } else {
+        Write-Host "Installation failed."
+    }
+}
