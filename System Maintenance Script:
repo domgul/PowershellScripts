@@ -1,0 +1,35 @@
+In this script, we first check the disk space on all fixed drives and output a warning message if the free space falls below a certain threshold. The $threshold variable specifies the minimum percentage of free disk space required. You can modify this value as needed.
+
+We then clean up temporary files by deleting all files in the C:\Windows\Temp and C:\Users\*\AppData\Local\Temp folders.
+
+Next, we update Windows by running the Install-WindowsUpdate cmdlet. The -AcceptAll parameter accepts all updates, and the -AutoReboot parameter automatically reboots the computer if required.
+
+We then clean up event logs by clearing all logs except for the "Application" and "System" logs using the Clear-EventLog cmdlet.
+
+Finally, we optimize Windows performance by defragmenting the C: drive and consolidating free space using the Optimize-Volume cmdlet. The -DriveLetter parameter specifies the drive to optimize, and the -Defrag and -SlabConsolidate parameters perform the specified optimizations.
+
+You can customize this script by adding or removing commands to perform other maintenance tasks, such as running virus scans, checking for and fixing disk errors, or cleaning up old user profiles.
+
+=======================================================================================================================================================================
+
+# Check disk space
+$threshold = 10 # Minimum percentage of free disk space
+$drives = Get-WmiObject Win32_Volume -Filter "DriveType = 3" | Select-Object Name, Label, FileSystem, Capacity, FreeSpace, @{Name="FreePercent";Expression={($_.FreeSpace / $_.Capacity) * 100 -as [int]}}
+foreach ($drive in $drives) {
+    if ($drive.FreePercent -lt $threshold) {
+        Write-Host "Warning: $($drive.Name) has only $($drive.FreePercent)% free space left."
+    }
+}
+
+# Clean up temporary files
+Remove-Item -Path "C:\Windows\Temp\*" -Recurse -Force
+Remove-Item -Path "C:\Users\*\AppData\Local\Temp\*" -Recurse -Force
+
+# Update Windows
+Install-WindowsUpdate -AcceptAll -AutoReboot
+
+# Clean up event logs
+Get-EventLog -List | Where-Object {$_.Log -ne "Application" -and $_.Log -ne "System"} | ForEach-Object { Clear-EventLog $_.Log }
+
+# Optimize Windows performance
+Optimize-Volume -DriveLetter "C" -Defrag -SlabConsolidate -Verbose
